@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal | EE - VLSI DESIGN AND TECHNOLOGY</title>
+  <meta name="description" content="Department Admin Control Panel for EE - VLSI Design and Technology. Manage events, continuous ticker announcements, and department information.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231d4ed8'><rect x='2' y='2' width='20' height='20' rx='4'/><path d='M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z' fill='%23fff'/></svg>">
+</head>
+<body class="admin-body">
+
+  <!-- PIN Protection Gate Overlay -->
+  <div class="pin-gate-overlay" id="pinGateOverlay">
+    <div class="pin-card">
+      <div class="pin-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--color-text-primary); margin-bottom: 0.5rem;">Admin Access</h2>
+      <p style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 1.5rem;">
+        Enter your Department Admin PIN to manage events, ticker bar, and website content.
+      </p>
+
+      <form id="pinForm">
+        <input type="password" id="adminPinInput" class="pin-input" placeholder="••••••••" maxlength="12" autofocus autocomplete="current-password">
+        <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 1.25rem;">
+          Default PIN: <code>vlsi2026</code>
+        </div>
+        <button type="submit" class="btn-lg btn-primary" style="width: 100%; justify-content: center;">
+          Unlock Admin Portal
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Top Navigation Bar -->
+  <header class="admin-navbar">
+    <div class="container admin-nav-container">
+      <div class="admin-brand">
+        <div class="brand-logo-icon" style="width: 38px; height: 38px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"></path>
+          </svg>
+        </div>
+        <div>
+          <div style="font-size: 0.75rem; font-weight: 700; color: var(--color-primary);" id="adminNavCollege">Sri Shakthi Institute of Engineering & Technology</div>
+          <div style="font-size: 1rem; font-weight: 800; color: var(--color-text-primary); display: flex; align-items: center; gap: 0.5rem;">
+            EE - VLSI Admin Portal <span class="admin-badge">Staff Mode</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-actions-bar">
+        <button type="button" class="btn-lg btn-primary" id="saveAllBtn" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          Save All to Disk
+        </button>
+
+        <button type="button" class="btn-icon-action" id="openMobileModalBtn" style="color: #1d4ed8; font-weight: 700;">
+          📱 Open on Mobile
+        </button>
+
+        <a href="index.html" target="_blank" class="btn-lg btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+          View Public Site ↗
+        </a>
+
+        <button type="button" class="btn-icon-action" id="lockAdminBtn" title="Lock Portal">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          Lock
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Admin Dashboard Container -->
+  <main class="admin-container">
+    <!-- Admin Navigation Tabs -->
+    <nav class="admin-tabs-nav" role="tablist">
+      <button class="admin-tab-btn active" data-tab="eventsTab" role="tab" aria-selected="true">
+        📅 Events Manager
+      </button>
+      <button class="admin-tab-btn" data-tab="tickerTab" role="tab" aria-selected="false">
+        ⚡ Scrolling Ticker
+      </button>
+      <button class="admin-tab-btn" data-tab="deptTab" role="tab" aria-selected="false">
+        🏛️ About Department
+      </button>
+      <button class="admin-tab-btn" data-tab="regsTab" role="tab" aria-selected="false">
+        👥 Student Registrations
+      </button>
+      <button class="admin-tab-btn" data-tab="backupTab" role="tab" aria-selected="false">
+        💾 Backup & Sync
+      </button>
+    </nav>
+
+    <!-- =====================================================================
+         TAB 1: EVENTS MANAGER
+         ===================================================================== -->
+    <section class="admin-tab-panel active" id="eventsTab" role="tabpanel">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div>
+            <h2 class="admin-card-title">Department Events & Fests</h2>
+            <p class="admin-card-desc">Add new technical symposiums, workshops, courses, or hackathons and manage their live status.</p>
+          </div>
+          <button type="button" class="btn-lg btn-primary" id="openAddEventModalBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add New Event
+          </button>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="admin-events-table">
+            <thead>
+              <tr>
+                <th>Event Name</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Date / Time</th>
+                <th>Deadline / Registration</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminEventsTableBody">
+              <!-- Rendered dynamically by js/admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 2: SCROLLING TICKER ANNOUNCEMENTS
+         ===================================================================== -->
+    <section class="admin-tab-panel" id="tickerTab" role="tabpanel">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div>
+            <h2 class="admin-card-title">Live Announcement Ticker</h2>
+            <p class="admin-card-desc">These messages continuously scroll across the top bar of the website and pause when visitors hover over them.</p>
+          </div>
+          <button type="button" class="btn-lg btn-primary" id="openAddTickerBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Ticker Announcement
+          </button>
+        </div>
+
+        <div class="ticker-admin-list" id="tickerAdminList">
+          <!-- Rendered dynamically by js/admin.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 3: ABOUT DEPARTMENT & COLLEGE DETAILS
+         ===================================================================== -->
+    <section class="admin-tab-panel" id="deptTab" role="tabpanel">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div>
+            <h2 class="admin-card-title">Department & Institution Information</h2>
+            <p class="admin-card-desc">Customize college name, department title, contact details, lab locations, and statistics.</p>
+          </div>
+          <button type="button" class="btn-lg btn-primary" id="saveDeptConfigBtn">
+            Save Department Info
+          </button>
+        </div>
+
+        <form id="deptConfigForm">
+          <div class="dept-form-grid">
+            <div class="form-group">
+              <label class="form-label" for="cfgInstitution">Institution / College Name</label>
+              <input type="text" id="cfgInstitution" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cfgDepartmentName">Department Name</label>
+              <input type="text" id="cfgDepartmentName" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cfgParentDepartment">Parent Department</label>
+              <input type="text" id="cfgParentDepartment" class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cfgContactEmail">Department Contact Email</label>
+              <input type="email" id="cfgContactEmail" class="form-input" required>
+            </div>
+
+            <div class="form-group dept-form-full">
+              <label class="form-label" for="cfgTagline">Tagline</label>
+              <input type="text" id="cfgTagline" class="form-input">
+            </div>
+
+            <div class="form-group dept-form-full">
+              <label class="form-label" for="cfgWelcomeMessage">Homepage Welcome Message</label>
+              <textarea id="cfgWelcomeMessage" class="form-textarea" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cfgOffice">Department Office Location</label>
+              <input type="text" id="cfgOffice" class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cfgLabLocations">Lab Facilities Location</label>
+              <input type="text" id="cfgLabLocations" class="form-input">
+            </div>
+          </div>
+
+          <!-- Registration QR Photo & Instructions Settings -->
+          <h3 style="font-size: 1.1rem; font-weight: 800; margin: 2rem 0 1rem; border-top: 1px solid var(--color-border); padding-top: 1.5rem;">
+            Registration QR Code Photo & Instructions
+          </h3>
+          <div style="background: #f8fafc; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.5rem; display: flex; gap: 2rem; align-items: center; flex-wrap: wrap;">
+            <div style="text-align: center;">
+              <div style="width: 130px; height: 130px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: var(--radius-md); padding: 0.35rem; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                <img id="adminQrPreview" src="assets/registration-qr.svg" alt="Registration QR Code Preview" style="width: 100%; height: 100%; object-fit: contain;">
+              </div>
+              <span style="font-size: 0.75rem; color: var(--color-text-muted); font-weight: 600;">Current Active QR</span>
+            </div>
+
+            <div style="flex: 1; min-width: 280px;">
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label" for="adminQrFileInput">Upload New QR Photo / Image</label>
+                <input type="file" id="adminQrFileInput" class="form-input" accept="image/*">
+                <div class="form-hint">Upload your UPI QR code, payment scanner, or pass verification image.</div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label" for="cfgQrImage">Or Image File Path / URL</label>
+                <input type="text" id="cfgQrImage" class="form-input" value="assets/registration-qr.svg">
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="cfgQrInstructions">QR Instructions for Students</label>
+                <input type="text" id="cfgQrInstructions" class="form-input" value="Scan this QR code with any UPI app to complete verification, then submit your details below.">
+              </div>
+            </div>
+          </div>
+
+          <h3 style="font-size: 1.1rem; font-weight: 800; margin: 2rem 0 1rem; border-top: 1px solid var(--color-border); padding-top: 1.5rem;">
+            Homepage Quick Stats Counters
+          </h3>
+          <div class="dept-form-grid" id="statsEditorGrid">
+            <!-- 4 stats items populated by js/admin.js -->
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 4: STUDENT REGISTRATIONS & APPROVAL WORKFLOW
+         ===================================================================== -->
+    <section class="admin-tab-panel" id="regsTab" role="tabpanel">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div>
+            <h2 class="admin-card-title">Student Registrations & Approval Queue</h2>
+            <p class="admin-card-desc">Review submitted student registrations, verify payments/QR scans, and approve to trigger confirmation emails.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="btn-lg btn-primary" id="exportCsvBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Download CSV Spreadsheet
+            </button>
+            <button type="button" class="btn-icon-action btn-delete" id="clearRegsBtn">
+              Clear All
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Pills & Search -->
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem;">
+          <div class="category-filter-group" id="regStatusFilters">
+            <button type="button" class="filter-btn active" data-status-filter="all">
+              <span>All Registrations</span>
+              <span class="filter-count-badge" id="countRegAll">0</span>
+            </button>
+            <button type="button" class="filter-btn" data-status-filter="Pending Approval">
+              <span style="color: #b45309;">⏳ Pending Approval</span>
+              <span class="filter-count-badge" id="countRegPending" style="background: #fef3c7; color: #b45309;">0</span>
+            </button>
+            <button type="button" class="filter-btn" data-status-filter="Confirmed">
+              <span style="color: #047857;">✅ Confirmed</span>
+              <span class="filter-count-badge" id="countRegConfirmed" style="background: #ecfdf5; color: #047857;">0</span>
+            </button>
+          </div>
+
+          <input type="search" id="regSearchInput" class="form-input" placeholder="Search by name, college, email, or event..." style="max-width: 320px;">
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="admin-events-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Student Name</th>
+                <th>Email ID</th>
+                <th>College / Institution</th>
+                <th>Year</th>
+                <th>Event</th>
+                <th>UTR / Ref</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="adminRegsTableBody">
+              <!-- Rendered dynamically by js/admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+              <!-- Rendered dynamically by js/admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 5: BACKUP & EXPORT
+         ===================================================================== -->
+    <section class="admin-tab-panel" id="backupTab" role="tabpanel">
+      <div class="admin-card">
+        <h2 class="admin-card-title">Data Storage & File Management</h2>
+        <p class="admin-card-desc" style="margin-bottom: 1.5rem;">Save your changes to disk or download backups.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 600px;">
+          <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 1.25rem; border-radius: var(--radius-lg);">
+            <h3 style="font-size: 1rem; font-weight: 700; color: #1e40af; margin-bottom: 0.25rem;">1. Sync with Local Server</h3>
+            <p style="font-size: 0.875rem; color: #1e3a8a; margin-bottom: 1rem;">
+              If running `node server.js`, this automatically rewrites <code>js/events-data.js</code> on your computer so changes persist across all browsers.
+            </p>
+            <button type="button" class="btn-lg btn-primary" id="syncServerDiskBtn">
+              💾 Save Directly to Server Disk
+            </button>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid var(--color-border); padding: 1.25rem; border-radius: var(--radius-lg);">
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.25rem;">2. Download Updated File</h3>
+            <p style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 1rem;">
+              Download an updated <code>events-data.js</code> file to save into your <code>js/</code> folder anytime.
+            </p>
+            <button type="button" class="btn-lg btn-secondary" id="downloadJsBtn">
+              📥 Download Updated events-data.js
+            </button>
+          </div>
+
+          <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 1.25rem; border-radius: var(--radius-lg);">
+            <h3 style="font-size: 1rem; font-weight: 700; color: #991b1b; margin-bottom: 0.25rem;">3. Reset to Defaults</h3>
+            <p style="font-size: 0.875rem; color: #b91c1c; margin-bottom: 1rem;">
+              Reset all events back to the original VELTRAXX 2.0, VELTRAXX'26, and Synopsys course configurations.
+            </p>
+            <button type="button" class="btn-icon-action btn-delete" id="resetDefaultsBtn">
+              ⚠️ Reset to Factory Defaults
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================================================================
+       MODAL: ADD / EDIT EVENT
+       ========================================================================= -->
+  <div class="modal-backdrop" id="eventEditModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 780px;">
+      <div class="modal-body" style="padding: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem;">
+          <h2 class="modal-title" id="eventEditModalTitle" style="color: var(--color-text-primary);">Add New Event</h2>
+          <button type="button" class="modal-close-btn" id="closeEventEditModalBtn" style="color: #64748b; background: #f1f5f9;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <form id="eventEditorForm">
+          <input type="hidden" id="editEventOriginalId">
+
+          <div class="dept-form-grid">
+            <div class="form-group dept-form-full">
+              <label class="form-label" for="editEventTitle">Event Title <span class="required-mark">*</span></label>
+              <input type="text" id="editEventTitle" class="form-input" placeholder="e.g. VELTRAXX 2.0" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editEventId">Event Identifier / Slug <span class="required-mark">*</span></label>
+              <input type="text" id="editEventId" class="form-input" placeholder="e.g. veltraxx-2" required>
+              <div class="form-hint">Used in URLs: <code>#event/veltraxx-2</code></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editEventCategory">Category</label>
+              <select id="editEventCategory" class="form-select">
+                <option value="Competitions">Competitions & Symposiums</option>
+                <option value="Workshops">Workshops & Courses</option>
+                <option value="Talks">Technical Talks & Keynotes</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editEventCategoryLabel">Category Sub-Label</label>
+              <input type="text" id="editEventCategoryLabel" class="form-input" placeholder="e.g. Flagship Technical Symposium">
+            </div>
+
+            <!-- Status Dropdown: Coming Soon, Completed, Open -->
+            <div class="form-group">
+              <label class="form-label" for="editEventStatus">Event Status <span class="required-mark">*</span></label>
+              <select id="editEventStatus" class="form-select" required>
+                <option value="Coming Soon">COMING SOON...</option>
+                <option value="Completed">Event Completed</option>
+                <option value="Open">Registration Open</option>
+                <option value="Closing Soon">Registration Closing Soon</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editEventDate">Event Date Text <span class="required-mark">*</span></label>
+              <input type="text" id="editEventDate" class="form-input" placeholder="e.g. Dates Announcing Soon or Dec 18, 2026" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editEventTime">Event Timing</label>
+              <input type="text" id="editEventTime" class="form-input" placeholder="e.g. 09:30 AM – 05:00 PM or To Be Announced">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editEventDeadline">Registration Status / Deadline <span class="required-mark">*</span></label>
+              <input type="text" id="editEventDeadline" class="form-input" placeholder="e.g. Opening Soon • Stay Tuned! or Registrations Closed" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editEventVenue">Venue Location</label>
+              <input type="text" id="editEventVenue" class="form-input" placeholder="e.g. Sri Shakthi Auditorium, SIET">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editEventVenueType">Venue Mode</label>
+              <input type="text" id="editEventVenueType" class="form-input" placeholder="e.g. In-Person (Campus Event)">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editEventTools">EDA Tools & Hardware (comma-separated)</label>
+              <input type="text" id="editEventTools" class="form-input" placeholder="e.g. Cadence Virtuoso, Synopsys EDA, Xilinx Vivado">
+            </div>
+
+            <div class="form-group dept-form-full">
+              <label class="form-label" for="editEventShortSummary">Short Summary (displayed on card) <span class="required-mark">*</span></label>
+              <textarea id="editEventShortSummary" class="form-textarea" rows="2" placeholder="Brief 1-2 sentence overview..." required></textarea>
+            </div>
+
+            <div class="form-group dept-form-full">
+              <label class="form-label" for="editEventDescription">Full Description & Overview</label>
+              <textarea id="editEventDescription" class="form-textarea" rows="4" placeholder="Detailed syllabus, objectives, and information..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editEventCoordName">Faculty Coordinator Name</label>
+              <input type="text" id="editEventCoordName" class="form-input" placeholder="Dr. S. Department Lead">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editEventCoordEmail">Coordinator Email</label>
+              <input type="email" id="editEventCoordEmail" class="form-input" placeholder="vlsi.events@siet.ac.in">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editEventPattern">Vector Card Artwork Motif</label>
+              <select id="editEventPattern" class="form-select">
+                <option value="wafer-grid">300mm Silicon Wafer & Hackathon Die Grid</option>
+                <option value="nanosheet">3D GAAFET Nanosheet Atomic Stack</option>
+                <option value="asic-routing">TSMC 28nm ASIC Floorplan & Routing Tracks</option>
+                <option value="fpga-grid">FPGA CLB Logic Block Matrix & Clock</option>
+                <option value="logic-gates">Digital Logic Gates & Bug Hunt Crosshair</option>
+                <option value="analog-waves">Cadence Virtuoso Analog Op-Amp & Sine Waves</option>
+                <option value="riscv-pipeline">5-Stage RISC-V CPU Instruction Pipeline</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="editEventColor">Primary Theme Color</label>
+              <input type="color" id="editEventColor" class="form-input" value="#1d4ed8" style="height: 44px; padding: 0.2rem;">
+            </div>
+
+            <div class="form-group dept-form-full">
+              <label class="form-label" for="editEventRegUrl">Custom Registration URL (Optional)</label>
+              <input type="url" id="editEventRegUrl" class="form-input" placeholder="Leave blank to use built-in registration, or paste Google/Microsoft Form URL">
+              <div class="form-hint">Leave blank to use the built-in student registration pass generator.</div>
+            </div>
+          </div>
+
+          <!-- Schedule Timeline Editor -->
+          <div style="margin-top: 1.5rem; border-top: 1px solid var(--color-border); padding-top: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <label class="form-label" style="margin-bottom: 0;">Session Schedule / Agenda</label>
+              <button type="button" class="btn-icon-action" id="addScheduleRowBtn">
+                + Add Session Row
+              </button>
+            </div>
+            <div id="scheduleRowsContainer">
+              <!-- Dynamically managed rows -->
+            </div>
+          </div>
+
+          <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-lg btn-secondary" id="cancelEventEditBtn">Cancel</button>
+            <button type="submit" class="btn-lg btn-primary">Save Event Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: REGISTRATION APPROVAL & EMAIL DISPATCHER
+       ========================================================================= -->
+  <div class="modal-backdrop" id="emailConfirmationModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 680px;">
+      <div class="modal-body" style="padding: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem;">
+          <div>
+            <span class="status-pill status-confirmed-pill">Registration Approval</span>
+            <h2 class="modal-title" style="color: var(--color-text-primary); margin-top: 0.25rem;">Confirm & Send Email</h2>
+          </div>
+          <button type="button" class="modal-close-btn" id="closeEmailModalBtn" style="color: #64748b; background: #f1f5f9;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <p style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 1.25rem;">
+          Approving this registration will lock the student's seat and send the confirmation email below.
+        </p>
+
+        <!-- Email Preview Box -->
+        <div class="email-preview-box">
+          <div class="email-header-meta">
+            <div class="email-meta-line">
+              <span class="email-meta-lbl">To:</span>
+              <span class="email-meta-val" id="emailModalTo">student@example.com</span>
+            </div>
+            <div class="email-meta-line">
+              <span class="email-meta-lbl">From:</span>
+              <span class="email-meta-val" id="emailModalFrom">vlsi.events@siet.ac.in (EE - VLSI Department)</span>
+            </div>
+            <div class="email-meta-line">
+              <span class="email-meta-lbl">Subject:</span>
+              <span class="email-meta-val" id="emailModalSubject" style="color: #047857;">Thanks for registering! Your registration has been confirmed</span>
+            </div>
+          </div>
+
+          <div class="email-body-content" id="emailModalBodyText">
+            <!-- Dynamic Email Body rendered by js/admin.js -->
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem;">
+          <button type="button" class="btn-icon-action" id="copyEmailTextBtn">
+            📋 Copy Email Text
+          </button>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <a href="#" id="launchMailtoBtn" class="btn-lg btn-secondary" style="font-size: 0.875rem;">
+              🚀 Open in Email App (mailto:)
+            </a>
+            <button type="button" class="btn-lg btn-primary" id="confirmApprovalBtn">
+              ✅ Approve & Confirm Registration
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/events-data.js"></script>
+  <script src="js/illustrations.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
